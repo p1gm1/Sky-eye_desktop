@@ -1,5 +1,4 @@
-images/*.jpg
-images/*.tiff
+images/*
 venv/*
-train_img/*.jpg
-train_img/*.tiff
+train_img/*
+

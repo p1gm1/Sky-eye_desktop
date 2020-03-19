@@ -25,7 +25,7 @@ imag = batch_img_load(dir_name +'/*.jpg')
 #Guardar en archivo de texto
 # arq = fdlg.asksaveasfile(mode='w',defaultextension=".txt",filetypes = (("Text file", "*.txt"),("CSV File","*.csv")))
 arq = open("Individuos_Ordenados2.txt",'a')
-arq.write('\n\nQuantidad de individuos en imagen: '+ dir_name +'\n')
+arq.write('\n\nCantidad de individuos en imagen: '+ dir_name +'\n')
 
 #Declarando variable de suma
 sum_p = 0
