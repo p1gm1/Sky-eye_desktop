@@ -100,7 +100,7 @@ class CropCounter():
                                 bd=BORDER_PADDING,
                                 bg=CANVAS_BACKGROUND,
                                 fg=FONT_COLOR,
-                                text='Bienvenido al asistente de conteo de cultivos \nselecciona una carpeta de cultivos, para iniciar.')
+                                text='Welcome to the crop counting assitant \nplease select a folder to begin.')
         self.text_label.place(rely=0.5,
                               relx=0.5,
                               anchor=N)

@@ -1,4 +1,15 @@
 images/*
 venv/*
 train_img/*
-
+oil_palm/*
+passion_fruit/*
+test_img/*
+guava/*
+Passion_fruit.csv
+label_process.py
+logo_image.png
+Oil_Palm_bbox.csv
+Guava_bbox.csv
+Labels/*
+Contrato_DroneSky.docx
+Coffee.csv
