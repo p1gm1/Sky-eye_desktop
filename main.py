@@ -23,7 +23,7 @@ import torch
 
 
 # Window properties.
-WINDOW_SIZE = 690
+WINDOW_SIZE = 850
 HEIGHT = 1000
 WIDTH = 1200
 BORDER_PADDING = 5
@@ -52,36 +52,27 @@ class CropCounter():
                            height=HEIGHT,
                            width=WIDTH)
         self.frame.pack(fill='both')
-       # self.master.resizable(width=False, height=False)
 
         self.cur = 0
         self.total = 0
+        self.results = []
 
         self.svSourcePath = StringVar()
         self.svSourcePath.set(os.getcwd())
         # ------------------ GUI stuff --------------------------------
-        # Logo image
-        self.logo_image = ImageTk.PhotoImage(Image.open('./logo_image.png'))
-        self.logo_label = Label(self.frame,
-                                image=self.logo_image)
-        self.logo_label.place(relx=0.23,
-                              rely=0.03,
-                              relheight=0.08,
-                              relwidth=0.23,
-                              anchor='ne')
         self.dir_label = Label(self.frame, 
-                               font=('Courier', (FONT_SIZE+4)),
+                               font=('Arial', (FONT_SIZE+4)),
                                text='Image Dir:',
                                bg=CANVAS_BACKGROUND,
                                fg=FONT_COLOR)
-        self.dir_label.place(relx=0.27,
-                             rely=0.03)
+        self.dir_label.place(relx=0.18,
+                             rely=0.014)
         
         # Directory entry and button
         self.entry = Entry(self.frame,
                            textvariable=self.svSourcePath)
         self.entry.place(relx=0.27,
-                         rely=0.08,
+                         rely=0.01,
                          relheight=0.045,
                          relwidth=0.5,)
         self.srcDirBtn = Button(self.frame, 
@@ -92,7 +83,7 @@ class CropCounter():
                                 text="Image input folder", 
                                 command=self.selectSrcDir)
         self.srcDirBtn.place(relx=0.78,
-                             rely=0.08)
+                             rely=0.01)
         # Output textbox
         self.text_label = Label(self.frame,
                                 font=('Courier', (FONT_SIZE+4)),
@@ -113,7 +104,7 @@ class CropCounter():
                             relief='flat',
                             text='Load',
                             command = self.loadDir)
-        self.ldBtn.place(relx=0.8,
+        self.ldBtn.place(relx=0.85,
                          rely=0.9)
 
 
@@ -134,7 +125,7 @@ class CropCounter():
         self.tkimg = ImageTk.PhotoImage(self.img.resize(self.imgnewsize,Image.ANTIALIAS))
         self.mainPanel = Canvas(self.frame, cursor='tcross')
         self.mainPanel.place(relx=0.5,
-                             rely=0.15,
+                             rely=0.08,
                              anchor=N)
         
         self.mainPanel.config(width = self.tkimg.width(), height = self.tkimg.height())
@@ -144,9 +135,9 @@ class CropCounter():
                                bd=BORDER_PADDING,
                                bg=CANVAS_BACKGROUND,
                                fg=FONT_COLOR,
-                               text=f'Progress: {self.cur}  /  {self.total} ')
-        self.progLabel.place(relx=0.3,
-                             rely=0.9,
+                               text=f'Progress: {self.cur}/{self.total}')
+        self.progLabel.place(relx=0.079,
+                             rely=0.2,
                              anchor=N)
         self.prevBtn = Button(self.frame,
                               bg=BUTTON_BACKGROUND,
@@ -155,8 +146,8 @@ class CropCounter():
                               relief='flat', 
                               text='<< Prev', 
                               command = self.prevImage)
-        self.prevBtn.place(relx=0.5,
-                           rely=0.9,
+        self.prevBtn.place(relx=0.04,
+                           rely=0.3,
                            anchor=N)
         self.nextBtn = Button(self.frame,
                               bg=BUTTON_BACKGROUND,
@@ -165,8 +156,8 @@ class CropCounter():
                               relief='flat', 
                               text='Next >>', 
                               command = self.nextImage)
-        self.nextBtn.place(relx=0.6,
-                           rely=0.9,
+        self.nextBtn.place(relx=0.12,
+                           rely=0.3,
                            anchor=N)
         self.sub_button = Button(self.frame,
                                  bg=BUTTON_BACKGROUND,
@@ -179,7 +170,7 @@ class CropCounter():
                               relx=0.9)
         self.text_label.config(text='Crop: \n'+str(self.imageDir)[40:])
         self.text_label.place_configure(rely=0.2,
-                                        relx=0.85,
+                                        relx=0.9,
                                         anchor=N)
 
 
@@ -202,7 +193,6 @@ class CropCounter():
         self.total = len(self.imageList)
 
         self.loadImage()
-        print('%d images loaded from %s' %(self.total, s))
 
 
     def prevImage(self):
@@ -210,13 +200,30 @@ class CropCounter():
         if self.cur > 1:
             self.cur -= 1
             self.loadImage()
-
+        if len(self.results) != 0:
+            for i in range(len(self.results)):
+                if self.results[i]['image_id']+'.JPG' == self.imageList[self.cur-1].split('/')[-1]:
+                    self.mainPanel.create_rectangle(int(int(self.results[i]['x1'])*self.scale), 
+                                                    int(int(self.results[i]['y1'])*self.scale),
+                                                    int(int(self.results[i]['x2'])*self.scale),
+                                                    int(int(self.results[i]['y2'])*self.scale),
+                                                    width=2,
+                                                    outline='red')
 
     def nextImage(self):
         """Load next image."""
         if self.cur < self.total:
             self.cur += 1
             self.loadImage()
+        if len(self.results) != 0:
+            for i in range(len(self.results)):
+                if self.results[i]['image_id']+'.JPG' == self.imageList[self.cur-1].split('/')[-1]:
+                    self.mainPanel.create_rectangle(int(int(self.results[i]['x1'])*self.scale), 
+                                                    int(int(self.results[i]['y1'])*self.scale),
+                                                    int(int(self.results[i]['x2'])*self.scale),
+                                                    int(int(self.results[i]['y2'])*self.scale),
+                                                    width=2,
+                                                    outline='red')
 
 
     def get_crops(self):
@@ -243,7 +250,7 @@ class CropCounter():
                                  collate_fn=collate_fn)
         
         device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')  
-        model = torch.load(os.path.dirname(os.path.abspath(__file__))+f'/{str(self.imageDir)[40:].lower()}/model.pth', 
+        model = torch.load(os.path.dirname(os.path.abspath(__file__))+f"/{str(self.imageDir).lower().split('/')[-1]}/model.pth", 
                            map_location=device)
 
         detection_threshold = 0.5
@@ -261,16 +268,19 @@ class CropCounter():
                                   detection_threshold, 
                                   device, 
                                   lit_model)
-
+        
         for i in range(len(self.results)):
-            self.mainPanel.create_rectangle(int(int(self.results[i]['x1'])*self.scale), 
-                                            int(int(self.results[i]['y1'])*self.scale),
-                                            int(int(self.results[i]['x2'])*self.scale),
-                                            int(int(self.results[i]['y2'])*self.scale),
-                                            width=2,
-                                            outline='red')
+            if self.results[i]['image_id']+'.JPG' == self.imageList[self.cur-1].split('/')[-1]:
+                self.mainPanel.create_rectangle(int(int(self.results[i]['x1'])*self.scale), 
+                                                int(int(self.results[i]['y1'])*self.scale),
+                                                int(int(self.results[i]['x2'])*self.scale),
+                                                int(int(self.results[i]['y2'])*self.scale),
+                                                width=2,
+                                                outline='red')
         
         self.text_label.config(text='Crop: \n'+str(self.imageDir)[40:]+'\nTotal: \n'+str(len(self.results)))
+
+        self.sub_button.config(state='disabled')
 
 if __name__=='__main__':
     root = Tk()
