@@ -1,10 +1,8 @@
 images/*
 venv/*
 train_img/*
-oil_palm/*
-passion_fruit/*
-test_img/*
-guava/*
+utils/__pycache__/*
+ml/__pycache__/*
 Passion_fruit.csv
 label_process.py
 logo_image.png
